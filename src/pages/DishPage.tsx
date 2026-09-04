@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, Box, Camera, MoveDiagonal2 } from "lucide-react";
+import { ArrowDown, ArrowLeft, Box, Camera, MoveDiagonal2 } from "lucide-react";
 import ModelViewer from "../components/ModelViewer";
 import { dishes } from "../data/dishes";
 
@@ -34,38 +34,35 @@ export default function DishPage() {
 
   return (
     <div className="min-h-screen bg-cream pb-12">
-      <div className="sticky top-0 z-10 flex items-center gap-3 bg-cream/95 px-5 py-4 backdrop-blur-sm">
+      <section className="relative flex min-h-[100svh] flex-col bg-gradient-to-b from-linen to-white">
+        <div className="absolute left-0 right-0 top-0 z-10 flex items-center gap-3 px-5 py-4">
         <button
           onClick={() => navigate(-1)}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-[0_4px_14px_-6px_rgba(43,36,32,0.3)] active:scale-95"
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-white/90 shadow-[0_4px_14px_-6px_rgba(43,36,32,0.3)] backdrop-blur-sm active:scale-95"
           aria-label="Back"
         >
           <ArrowLeft size={19} className="text-charcoal" />
         </button>
-        <span className="text-[14px] font-medium text-espresso/60">Back</span>
-      </div>
-
-      <div className="px-5">
-        <div className="relative aspect-[5/4] w-full overflow-hidden rounded-3xl bg-linen">
-          <img
-            src={dish.image}
-            alt={dish.name}
-            onError={(event) => {
-              event.currentTarget.onerror = null;
-              event.currentTarget.src = "https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=1200&auto=format&fit=crop";
-            }}
-            className="h-full w-full object-cover"
-          />
-          <span
-            className={`absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-md border-2 bg-white/95 ${
-              dish.isVeg ? "border-sage" : "border-tomato"
-            }`}
-          >
-            <span className={`h-3 w-3 rounded-full ${dish.isVeg ? "bg-sage" : "bg-tomato"}`} />
-          </span>
         </div>
 
-        <div className="mt-5 flex items-start justify-between gap-3">
+        <div className="flex min-h-[100svh] items-center px-3 pt-4">
+          <ModelViewer
+            key={viewMode}
+            src={dish.model}
+            alt={dish.name}
+            arMode={viewMode === "ar"}
+            className="h-[calc(100svh-2rem)] w-full"
+          />
+        </div>
+
+        <div className="absolute bottom-5 left-0 right-0 flex flex-col items-center gap-2 text-espresso/55">
+          <span className="text-[13px] font-medium">Scroll to see description</span>
+          <ArrowDown size={16} className="animate-bounce" />
+        </div>
+      </section>
+
+      <div className="px-5 pt-10">
+        <div className="flex items-start justify-between gap-3">
           <h1 className="font-display text-[26px] font-semibold leading-tight text-charcoal">
             {dish.name}
           </h1>
@@ -86,11 +83,7 @@ export default function DishPage() {
         </div>
 
         <div className="mt-8">
-          <h2 className="font-display text-[19px] font-semibold text-charcoal">
-            Experience this dish
-          </h2>
-
-          <div className="mt-3 flex gap-2 rounded-full bg-linen p-1">
+          <div className="flex gap-2 rounded-full bg-linen p-1">
             <button
               onClick={() => setViewMode("3d")}
               className={`flex flex-1 items-center justify-center gap-1.5 rounded-full py-2.5 text-[14px] font-medium transition-colors ${
@@ -107,16 +100,6 @@ export default function DishPage() {
             >
               <Camera size={16} /> View on My Table
             </button>
-          </div>
-
-          <div className="mt-4 overflow-hidden rounded-3xl bg-gradient-to-b from-linen to-white p-1">
-            <ModelViewer
-              key={viewMode}
-              src={dish.model}
-              alt={dish.name}
-              arMode={viewMode === "ar"}
-              className="h-[320px] w-full rounded-[20px]"
-            />
           </div>
 
           {viewMode === "3d" ? (
