@@ -3,17 +3,11 @@ import { Search } from "lucide-react";
 import Header from "../components/Header";
 import CategoryFilter from "../components/CategoryFilter";
 import FoodCard from "../components/FoodCard";
-<<<<<<< HEAD
 import { categories } from "../data/dishes";
 import { useDishes } from "../lib/dishStore";
 
 export default function MenuPage() {
   const dishes = useDishes();
-=======
-import { dishes, categories } from "../data/dishes";
-
-export default function MenuPage() {
->>>>>>> 652464cca6395523f91b2d3f72b14a54d9516123
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<(typeof categories)[number]>("All");
 

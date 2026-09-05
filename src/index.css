@@ -64,8 +64,6 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
-<<<<<<< HEAD
-
 /* Admin-only form styling — not used anywhere on the public menu/dish pages */
 .input {
   width: 100%;
@@ -81,5 +79,3 @@ body {
   outline: 2px solid var(--color-clay);
   outline-offset: 1px;
 }
-=======
->>>>>>> 652464cca6395523f91b2d3f72b14a54d9516123

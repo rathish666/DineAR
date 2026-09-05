@@ -40,7 +40,6 @@ interface ModelViewerProps {
 export default function ModelViewer({ src, alt, poster, arMode = false, className = "" }: ModelViewerProps) {
   const ref = useRef<HTMLElement | null>(null);
   const [modelError, setModelError] = useState(false);
-<<<<<<< HEAD
   const [libraryReady, setLibraryReady] = useState(
     () => typeof window !== "undefined" && customElements.get("model-viewer") !== undefined
   );
@@ -58,11 +57,6 @@ export default function ModelViewer({ src, alt, poster, arMode = false, classNam
   }, [libraryReady]);
 
   useEffect(() => {
-=======
-  const modelSrc = `${import.meta.env.BASE_URL}${src.replace(/^\/+/, "")}`;
-
-  useEffect(() => {
->>>>>>> 652464cca6395523f91b2d3f72b14a54d9516123
     setModelError(false);
     const node = ref.current;
     if (!node) return;
@@ -70,7 +64,6 @@ export default function ModelViewer({ src, alt, poster, arMode = false, classNam
     const handleError = () => setModelError(true);
     node.addEventListener("error", handleError);
     return () => node.removeEventListener("error", handleError);
-<<<<<<< HEAD
   }, [src, libraryReady]);
 
   if (!libraryReady) {
@@ -80,9 +73,6 @@ export default function ModelViewer({ src, alt, poster, arMode = false, classNam
       </div>
     );
   }
-=======
-  }, [src]);
->>>>>>> 652464cca6395523f91b2d3f72b14a54d9516123
 
   if (modelError) {
     return (

@@ -2,21 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowDown, ArrowLeft, Box, Camera, MoveDiagonal2 } from "lucide-react";
 import ModelViewer from "../components/ModelViewer";
-<<<<<<< HEAD
 import { useDishes } from "../lib/dishStore";
-=======
-import { dishes } from "../data/dishes";
->>>>>>> 652464cca6395523f91b2d3f72b14a54d9516123
 
 type ViewMode = "3d" | "ar";
 
 export default function DishPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-<<<<<<< HEAD
   const dishes = useDishes();
-=======
->>>>>>> 652464cca6395523f91b2d3f72b14a54d9516123
   const dish = dishes.find((item) => item.id === Number(id));
 
   const [viewMode, setViewMode] = useState<ViewMode>("3d");
