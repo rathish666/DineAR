@@ -1,0 +1,173 @@
+import { useState } from "react";
+import { X } from "lucide-react";
+import type { Dish, DishCategory } from "../data/dishes";
+
+const CATEGORY_OPTIONS: DishCategory[] = [
+  "Starters",
+  "Main Course",
+  "Biryani",
+  "Pizza",
+  "Desserts",
+  "Drinks",
+];
+
+interface DishFormProps {
+  initialDish: Dish;
+  onSave: (dish: Dish) => void;
+  onClose: () => void;
+}
+
+export default function DishForm({ initialDish, onSave, onClose }: DishFormProps) {
+  const [form, setForm] = useState({
+    ...initialDish,
+    ingredientsText: initialDish.ingredients.join(", "),
+  });
+
+  const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    onSave({
+      id: form.id,
+      name: form.name.trim(),
+      price: Number(form.price) || 0,
+      image: form.image.trim(),
+      description: form.description.trim(),
+      ingredients: form.ingredientsText
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean),
+      category: form.category,
+      isVeg: form.isVeg,
+      model: form.model.trim(),
+    });
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-charcoal/50 backdrop-blur-sm sm:items-center">
+      <form
+        onSubmit={handleSubmit}
+        className="max-h-[90svh] w-full max-w-md overflow-y-auto rounded-t-3xl bg-cream p-5 pb-8 shadow-2xl sm:rounded-3xl"
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-lg font-semibold text-charcoal">
+            {initialDish.name ? "Edit Dish" : "Add Dish"}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-full bg-linen text-espresso/60"
+            aria-label="Close"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        <div className="mt-4 space-y-3.5">
+          <Field label="Dish name">
+            <input
+              required
+              value={form.name}
+              onChange={(event) => update("name", event.target.value)}
+              className="input"
+              placeholder="Chicken Biryani"
+            />
+          </Field>
+
+          <Field label="Price (₹)">
+            <input
+              required
+              type="number"
+              min={0}
+              value={form.price}
+              onChange={(event) => update("price", Number(event.target.value) as unknown as typeof form.price)}
+              className="input"
+              placeholder="249"
+            />
+          </Field>
+
+          <Field label="Image URL">
+            <input
+              required
+              value={form.image}
+              onChange={(event) => update("image", event.target.value)}
+              className="input"
+              placeholder="https://images.unsplash.com/..."
+            />
+          </Field>
+
+          <Field label="Description">
+            <textarea
+              required
+              rows={3}
+              value={form.description}
+              onChange={(event) => update("description", event.target.value)}
+              className="input resize-none"
+              placeholder="Aromatic basmati rice..."
+            />
+          </Field>
+
+          <Field label="Ingredients (comma separated)">
+            <input
+              value={form.ingredientsText}
+              onChange={(event) => update("ingredientsText", event.target.value)}
+              className="input"
+              placeholder="Chicken, Basmati Rice, Saffron"
+            />
+          </Field>
+
+          <Field label="Category">
+            <select
+              value={form.category}
+              onChange={(event) => update("category", event.target.value as DishCategory)}
+              className="input"
+            >
+              {CATEGORY_OPTIONS.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field label="3D model path">
+            <input
+              value={form.model}
+              onChange={(event) => update("model", event.target.value)}
+              className="input"
+              placeholder="/models/biryani.glb"
+            />
+          </Field>
+
+          <label className="flex items-center gap-2.5 pt-1 text-[14px] text-charcoal">
+            <input
+              type="checkbox"
+              checked={form.isVeg}
+              onChange={(event) => update("isVeg", event.target.checked)}
+              className="h-4 w-4 accent-sage"
+            />
+            Vegetarian
+          </label>
+        </div>
+
+        <button
+          type="submit"
+          className="mt-6 w-full rounded-full bg-clay py-3.5 text-[15px] font-medium text-cream active:bg-clay-dark"
+        >
+          Save Dish
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <label className="block">
+      <span className="mb-1.5 block text-[12.5px] font-medium text-espresso/60">{label}</span>
+      {children}
+    </label>
+  );
+}
