@@ -40,6 +40,7 @@ interface ModelViewerProps {
 export default function ModelViewer({ src, alt, poster, arMode = false, className = "" }: ModelViewerProps) {
   const ref = useRef<HTMLElement | null>(null);
   const [modelError, setModelError] = useState(false);
+  const modelSrc = `${import.meta.env.BASE_URL}${src.replace(/^\/+/, "")}`;
 
   useEffect(() => {
     setModelError(false);
@@ -67,7 +68,7 @@ export default function ModelViewer({ src, alt, poster, arMode = false, classNam
   return (
     <model-viewer
       ref={ref as unknown as React.RefObject<HTMLElement>}
-      src={src}
+      src={modelSrc}
       alt={alt}
       poster={poster}
       camera-controls
