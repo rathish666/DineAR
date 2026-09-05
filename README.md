@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # DineAR
 
 A mobile-first restaurant menu with 3D dish previews and AR "view on my table," plus a lightweight admin screen for editing the menu.
@@ -121,3 +122,38 @@ Add an object to the `dishes` array in `src/data/dishes.ts`:
 - [x] Missing/broken `.glb` files fall back to a friendly message instead of crashing
 - [ ] Consider adding real image hosting (e.g. Vercel Blob/Cloudinary) if you don't want to rely on external image URLs
 - [ ] Consider a real backend if you want live multi-device menu editing without redeploying
+=======
+# React + TypeScript + Vite
+
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+
+Currently, two official plugins are available:
+
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+
+## React Compiler
+
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+
+## Expanding the Oxlint configuration
+
+If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+
+```json
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript", "oxc"],
+  "options": {
+    "typeAware": true
+  },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+  }
+}
+```
+
+See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+# DineAR
+>>>>>>> 652464cca6395523f91b2d3f72b14a54d9516123

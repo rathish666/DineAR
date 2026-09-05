@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -25,5 +26,17 @@ export default function App() {
         </Routes>
       </Suspense>
     </ErrorBoundary>
+=======
+import { Route, Routes } from "react-router-dom";
+import MenuPage from "./pages/MenuPage";
+import DishPage from "./pages/DishPage";
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<MenuPage />} />
+      <Route path="/dish/:id" element={<DishPage />} />
+    </Routes>
+>>>>>>> 652464cca6395523f91b2d3f72b14a54d9516123
   );
 }
