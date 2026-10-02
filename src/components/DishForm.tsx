@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X } from "lucide-react";
+import { ImagePlus, X } from "lucide-react";
 import type { Dish, DishCategory } from "../data/dishes";
 
 const CATEGORY_OPTIONS: DishCategory[] = [
@@ -18,6 +18,7 @@ interface DishFormProps {
 }
 
 export default function DishForm({ initialDish, onSave, onClose }: DishFormProps) {
+  const [imageError, setImageError] = useState("");
   const [form, setForm] = useState({
     ...initialDish,
     ingredientsText: initialDish.ingredients.join(", "),
@@ -25,6 +26,27 @@ export default function DishForm({ initialDish, onSave, onClose }: DishFormProps
 
   const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleImageUpload = async (file: File | undefined) => {
+    if (!file) return;
+    setImageError("");
+
+    if (!file.type.startsWith("image/")) {
+      setImageError("Please choose an image file.");
+      return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+      setImageError("Please choose an image smaller than 8 MB.");
+      return;
+    }
+
+    try {
+      update("image", await compressImage(file));
+    } catch {
+      setImageError("This image could not be processed. Please try another file.");
+    }
   };
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -88,14 +110,29 @@ export default function DishForm({ initialDish, onSave, onClose }: DishFormProps
             />
           </Field>
 
-          <Field label="Image URL">
-            <input
-              required
-              value={form.image}
-              onChange={(event) => update("image", event.target.value)}
-              className="input"
-              placeholder="https://images.unsplash.com/..."
-            />
+          <Field label="Dish image">
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-[14px] border border-dashed border-clay/50 bg-white px-4 py-3 text-[14px] font-medium text-clay-dark transition-colors hover:bg-linen">
+              <ImagePlus size={18} />
+              {form.image ? "Choose a different image" : "Upload an image"}
+              <input
+                required={!form.image}
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                onChange={(event) => {
+                  void handleImageUpload(event.target.files?.[0]);
+                  event.currentTarget.value = "";
+                }}
+                className="sr-only"
+              />
+            </label>
+            {form.image && (
+              <img
+                src={form.image}
+                alt="Dish preview"
+                className="mt-2 h-32 w-full rounded-[14px] object-cover"
+              />
+            )}
+            {imageError && <p className="mt-1.5 text-[12.5px] text-tomato">{imageError}</p>}
           </Field>
 
           <Field label="Description">
@@ -161,6 +198,33 @@ export default function DishForm({ initialDish, onSave, onClose }: DishFormProps
       </form>
     </div>
   );
+}
+
+function compressImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = new Image();
+      image.onload = () => {
+        const maxDimension = 1200;
+        const scale = Math.min(1, maxDimension / Math.max(image.width, image.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        const context = canvas.getContext("2d");
+        if (!context) {
+          reject(new Error("Canvas is not supported"));
+          return;
+        }
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.82));
+      };
+      image.onerror = () => reject(new Error("Invalid image"));
+      image.src = String(reader.result);
+    };
+    reader.onerror = () => reject(new Error("Could not read image"));
+    reader.readAsDataURL(file);
+  });
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
