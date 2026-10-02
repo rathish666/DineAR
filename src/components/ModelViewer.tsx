@@ -43,7 +43,9 @@ export default function ModelViewer({ src, alt, poster, arMode = false, classNam
   const [libraryReady, setLibraryReady] = useState(
     () => typeof window !== "undefined" && customElements.get("model-viewer") !== undefined
   );
-  const modelSrc = `${import.meta.env.BASE_URL}${src.replace(/^\/+/, "")}`;
+  const modelSrc = src.startsWith("data:") || src.startsWith("http")
+    ? src
+    : `${import.meta.env.BASE_URL}${src.replace(/^\/+/, "")}`;
 
   useEffect(() => {
     if (libraryReady) return;

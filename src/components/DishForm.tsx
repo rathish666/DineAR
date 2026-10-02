@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ImagePlus, X } from "lucide-react";
+import { Box, ImagePlus, X } from "lucide-react";
 import type { Dish, DishCategory } from "../data/dishes";
 
 const CATEGORY_OPTIONS: DishCategory[] = [
@@ -19,6 +19,7 @@ interface DishFormProps {
 
 export default function DishForm({ initialDish, onSave, onClose }: DishFormProps) {
   const [imageError, setImageError] = useState("");
+  const [modelError, setModelError] = useState("");
   const [form, setForm] = useState({
     ...initialDish,
     ingredientsText: initialDish.ingredients.join(", "),
@@ -46,6 +47,28 @@ export default function DishForm({ initialDish, onSave, onClose }: DishFormProps
       update("image", await compressImage(file));
     } catch {
       setImageError("This image could not be processed. Please try another file.");
+    }
+  };
+
+  const handleModelUpload = async (file: File | undefined) => {
+    if (!file) return;
+    setModelError("");
+
+    const extension = file.name.toLowerCase().split(".").pop();
+    if (extension !== "glb" && extension !== "gltf") {
+      setModelError("Unsupported format. Upload a .glb or .gltf file. OBJ is not supported.");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      setModelError("Please choose a 3D model smaller than 10 MB.");
+      return;
+    }
+
+    try {
+      update("model", await readFileAsDataUrl(file));
+    } catch {
+      setModelError("This 3D model could not be read. Please try another file.");
     }
   };
 
@@ -169,13 +192,27 @@ export default function DishForm({ initialDish, onSave, onClose }: DishFormProps
             </select>
           </Field>
 
-          <Field label="3D model path">
-            <input
-              value={form.model}
-              onChange={(event) => update("model", event.target.value)}
-              className="input"
-              placeholder="/models/biryani.glb"
-            />
+          <Field label="3D model (.glb or .gltf)">
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-[14px] border border-dashed border-clay/50 bg-white px-4 py-3 text-[14px] font-medium text-clay-dark transition-colors hover:bg-linen">
+              <Box size={18} />
+              {form.model ? "Choose a different 3D model" : "Upload a 3D model"}
+              <input
+                required={!form.model}
+                type="file"
+                accept=".glb,.gltf,model/gltf-binary,model/gltf+json"
+                onChange={(event) => {
+                  void handleModelUpload(event.target.files?.[0]);
+                  event.currentTarget.value = "";
+                }}
+                className="sr-only"
+              />
+            </label>
+            {form.model && (
+              <p className="mt-2 truncate rounded-[14px] bg-linen px-3 py-2 text-[12px] text-espresso/65">
+                {form.model.startsWith("data:") ? "Uploaded 3D model" : form.model}
+              </p>
+            )}
+            {modelError && <p className="mt-1.5 text-[12.5px] text-tomato">{modelError}</p>}
           </Field>
 
           <label className="flex items-center gap-2.5 pt-1 text-[14px] text-charcoal">
@@ -223,6 +260,15 @@ function compressImage(file: File): Promise<string> {
       image.src = String(reader.result);
     };
     reader.onerror = () => reject(new Error("Could not read image"));
+    reader.readAsDataURL(file);
+  });
+}
+
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error("Could not read file"));
     reader.readAsDataURL(file);
   });
 }
